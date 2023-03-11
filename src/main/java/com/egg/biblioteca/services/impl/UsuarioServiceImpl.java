@@ -1,4 +1,4 @@
-package com.egg.biblioteca.services;
+package com.egg.biblioteca.services.impl;
 
 import com.egg.biblioteca.entities.Usuario;
 import com.egg.biblioteca.enumeraciones.Rol;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class UsuarioService implements UserDetailsService {
+public class UsuarioServiceImpl implements UserDetailsService {
 
     @Autowired
     private UsuarioRepositorio usuarioRepositorio;

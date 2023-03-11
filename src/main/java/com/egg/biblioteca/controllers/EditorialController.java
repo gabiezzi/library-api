@@ -5,10 +5,7 @@
 package com.egg.biblioteca.controllers;
 
 import com.egg.biblioteca.exceptions.MiException;
-import com.egg.biblioteca.services.EditorialService;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.egg.biblioteca.services.impl.EditorialServiceImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class EditorialController {
 
     @Autowired
-    EditorialService editorialService;
+    EditorialServiceImpl editorialServiceImpl;
 
     @GetMapping("/registrar")
     public String registrar() {
@@ -33,7 +30,7 @@ public class EditorialController {
 
         try {
 
-            editorialService.crearEditorial(nombre);
+            editorialServiceImpl.crearEditorial(nombre);
 
             model.put("exito", "La editorial se cargo con exito!");
 
@@ -49,7 +46,7 @@ public class EditorialController {
 
     @GetMapping("/lista")
     public String listar(ModelMap model) {
-        model.addAttribute("editoriales", editorialService.listarEditoriales());
+        model.addAttribute("editoriales", editorialServiceImpl.listarEditoriales());
 
         return "editorial_list";
 
@@ -58,7 +55,7 @@ public class EditorialController {
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable String id , ModelMap model){
 
-        model.put("editorial", editorialService.getOne(id));
+        model.put("editorial", editorialServiceImpl.getOne(id));
 
         return "editorial_editar";
 
@@ -67,7 +64,7 @@ public class EditorialController {
     @PostMapping("/editar/{id}")
     public String editar(@PathVariable String id, String nombre , ModelMap model){
         try {
-            editorialService.modificarEditorial(nombre, id);
+            editorialServiceImpl.modificarEditorial(nombre, id);
             return "redirect:../lista";
 
         }catch (MiException e){
