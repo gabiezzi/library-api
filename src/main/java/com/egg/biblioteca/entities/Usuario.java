@@ -9,13 +9,17 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import lombok.Data;
+
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 /* * @author Gabiezzi
  */
 @Entity
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Usuario {
 
     @Id

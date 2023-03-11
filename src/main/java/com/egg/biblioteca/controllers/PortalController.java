@@ -5,7 +5,7 @@ package com.egg.biblioteca.controllers;
 
 import com.egg.biblioteca.entities.Usuario;
 import com.egg.biblioteca.exceptions.MiException;
-import com.egg.biblioteca.services.UsuarioService;
+import com.egg.biblioteca.services.impl.UsuarioServiceImpl;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class PortalController {
 
     @Autowired
-    private UsuarioService usuarioService;
+    private UsuarioServiceImpl usuarioServiceImpl;
 
     @GetMapping("/")
     public String index() {
@@ -39,7 +39,7 @@ public class PortalController {
     public String registro(@RequestParam String nombre, @RequestParam String email , @RequestParam String password , @RequestParam String password2 , ModelMap model){
 
         try {
-            usuarioService.registrar(nombre, email, password, password2);
+            usuarioServiceImpl.registrar(nombre, email, password, password2);
 
             model.put("exito", "usuario registrado con exito!");
 

@@ -5,10 +5,11 @@ package com.egg.biblioteca.controllers;
 
 import com.egg.biblioteca.entities.Autor;
 import com.egg.biblioteca.entities.Editorial;
+import com.egg.biblioteca.entities.Libro;
 import com.egg.biblioteca.exceptions.MiException;
-import com.egg.biblioteca.services.AutorService;
-import com.egg.biblioteca.services.EditorialService;
-import com.egg.biblioteca.services.LibroService;
+import com.egg.biblioteca.services.impl.AutorServiceImpl;
+import com.egg.biblioteca.services.impl.EditorialServiceImpl;
+import com.egg.biblioteca.services.impl.LibroServiceImpl;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -26,17 +27,17 @@ import org.springframework.web.bind.annotation.*;
 public class LibroController {
 
     @Autowired
-    private LibroService libroService;
+    private LibroServiceImpl libroServiceImpl;
     @Autowired
-    private AutorService autorService;
+    private AutorServiceImpl autorServiceImpl;
     @Autowired
-    private EditorialService editorialService;
+    private EditorialServiceImpl editorialServiceImpl;
 
     @GetMapping("/registrar")
     public String registrar(ModelMap model) {
 
-        List<Autor> autores = autorService.listarAutores();
-        List<Editorial> editoriales = editorialService.listarEditoriales();
+        List<Autor> autores = autorServiceImpl.listarAutores();
+        List<Editorial> editoriales = editorialServiceImpl.listarEditoriales();
 
         model.addAttribute("autores", autores);
 
@@ -46,20 +47,25 @@ public class LibroController {
     }
 
     @PostMapping("/registro")
-    public String registro(@RequestParam(required = false) Long isbn, @RequestParam String titulo, @RequestParam(required = false) Integer ejemplares,
-                           @RequestParam String idAutor, @RequestParam String idEditorial, ModelMap model) {
+    public String registro(@RequestBody Libro libro, ModelMap model) throws MiException {
+
+        if (libro == null)
+
+            throw new MiException("Falta cuerpo del libro");
+
 
         try {
 
-            libroService.crearLibro(isbn, titulo, ejemplares, idAutor, idEditorial);
+            libroServiceImpl.crearLibro(libro);
 
             model.put("exito", "El libro fue cargado exitosamente!");
 
         } catch (Exception ex) {
+
             Logger.getLogger(LibroController.class.getName()).log(Level.SEVERE, null, ex);
 
-            List<Autor> autores = autorService.listarAutores();
-            List<Editorial> editoriales = editorialService.listarEditoriales();
+            List<Autor> autores = autorServiceImpl.listarAutores();
+            List<Editorial> editoriales = editorialServiceImpl.listarEditoriales();
 
             model.addAttribute("autores", autores);
 
@@ -77,7 +83,7 @@ public class LibroController {
     @GetMapping("/lista")
     public String listar(ModelMap model) {
 
-        model.addAttribute("libros", libroService.listarLibros());
+        model.addAttribute("libros", libroServiceImpl.listarLibros());
         return "libro_list";
 
     }
@@ -85,10 +91,10 @@ public class LibroController {
     @GetMapping("/editar/{isbn}")
     public String editar(ModelMap model, @PathVariable Long isbn) {
 
-        model.put("libro", libroService.getOne(isbn));
+        model.put("libro", libroServiceImpl.getOne(isbn));
 
-        List<Autor> autores = autorService.listarAutores();
-        List<Editorial> editoriales = editorialService.listarEditoriales();
+        List<Autor> autores = autorServiceImpl.listarAutores();
+        List<Editorial> editoriales = editorialServiceImpl.listarEditoriales();
 
         model.addAttribute("autores", autores);
 
@@ -98,17 +104,17 @@ public class LibroController {
 
     }
 
-    @PostMapping("/editar/{isbn}")
+    @PutMapping("/editar/{isbn}")
     public String modificar(@PathVariable Long isbn, String titulo, Integer ejemplares, String idAutor, String idEditorial, ModelMap model) {
 
         try {
-            libroService.modificarLibro(isbn, titulo, idAutor, idEditorial, ejemplares);
+            libroServiceImpl.modificarLibro(isbn, titulo, idAutor, idEditorial, ejemplares);
             return "redirect:../lista";
         } catch (MiException e) {
             model.put("error", e.getMessage());
 
-            List<Autor> autores = autorService.listarAutores();
-            List<Editorial> editoriales = editorialService.listarEditoriales();
+            List<Autor> autores = autorServiceImpl.listarAutores();
+            List<Editorial> editoriales = editorialServiceImpl.listarEditoriales();
 
             model.addAttribute("autores", autores);
 
@@ -116,6 +122,21 @@ public class LibroController {
 
             return "libro_editar";
         }
+
+
+    }
+
+    @GetMapping
+    public String libroPorId(@PathVariable Long isbn, ModelMap modelMap) throws MiException {
+
+        if (isbn == 0)
+            throw new MiException("Isbn no puede ser nulo");
+
+        Libro libro = libroServiceImpl.getOne(isbn);
+
+        modelMap.addAttribute("libro", libro);
+
+        return "libro-detalles";
 
 
     }

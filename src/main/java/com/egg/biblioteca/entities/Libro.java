@@ -4,6 +4,11 @@
 
 package com.egg.biblioteca.entities;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -15,6 +20,10 @@ import javax.persistence.TemporalType;
  */
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Libro {
     
     @Id
@@ -31,57 +40,4 @@ public class Libro {
     @ManyToOne
     private Editorial editorial;
 
-    public Libro() {
-    }
-
-    public Long getIsbn() {
-        return isbn;
-    }
-
-    public void setIsbn(Long isbn) {
-        this.isbn = isbn;
-    }
-
-    public String getTitulo() {
-        return titulo;
-    }
-
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
-    }
-
-    public Integer getCantEjemplares() {
-        return cantEjemplares;
-    }
-
-    public void setCantEjemplares(Integer cantEjemplares) {
-        this.cantEjemplares = cantEjemplares;
-    }
-
-    public Date getAlta() {
-        return alta;
-    }
-
-    public void setAlta(Date alta) {
-        this.alta = alta;
-    }
-
-    public Autor getAutor() {
-        return autor;
-    }
-
-    public void setAutor(Autor autor) {
-        this.autor = autor;
-    }
-
-    public Editorial getEditorial() {
-        return editorial;
-    }
-
-    public void setEditorial(Editorial editorial) {
-        this.editorial = editorial;
-    }
-    
-
-    
 }
