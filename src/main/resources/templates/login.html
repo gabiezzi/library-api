@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+    <head th:replace="layouts/layout::head"></head>
+
+    <body>
+
+        <nav th:replace="layouts/layout::topBar"></nav>
+
+        <nav th:replace="layouts/layout::navBar"></nav>
+
+        <main>
+
+            <div>
+                <div class="container m-5">
+
+                    <form th:action="@{/logincheck}" method="post" class="container col-8 col-lg-6 d-flex flex-column ">
+
+                        <div th:if="${error != null}" class="card text-white bg-danger container mb-3 col-4">
+                            <div class="card-body">
+                                <h5 class="card-title">ERROR! &#9888;</h5>
+                                <p class="card-text" th:text="${error}"></p>
+                            </div>
+                        </div>
+                        <div th:if="${exito != null}" class="card text-white bg-success container mb-3 col-4">
+                            <div class="card-body">
+                                <h5 class="card-title">EXITO!</h5>
+                                <p class="card-text" th:text="${exito}"></p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h3 class="card-title">Accede a la biblioteca!</h3>
+                        </div>
+
+                        <div class="form-group my-3">
+                            <input type="email" class="form-control" name="email" placeholder="EMAIL" >
+                        </div>
+
+                        <div class="form-group my-3">
+                            <input type="password" class="form-control" name="password" placeholder="CONTRASEÑA">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary mt-3">Ingresar</button>
+
+
+                    </form>
+
+                    <section class="text-center container">
+                        <div class="row mt-3">
+                            <div>
+                                <a th:href="@{/}" class="btn btn-secondary my-2">Volver!</a>
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+
+                </div>
+
+
+            </div>
+
+
+
+        </main>
+
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+                integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+        crossorigin="anonymous"></script>
+    </body>
+
+</html>

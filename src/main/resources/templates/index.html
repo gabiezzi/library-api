@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    
+    <head th:replace="layouts/layout::head"></head>
+
+    <body>
+
+        <nav th:replace="layouts/layout::topBar"></nav>
+        
+        <nav th:replace="layouts/layout::navBar"></nav>
+
+        <main class="d-flex justify-content-between">
+
+            <div class="fondo">
+
+            </div>
+
+            <div class="center">
+                <a type="button" th:href="@{/libro/lista/}" class="btn btn-warning">Ver libros</a>
+            </div>
+
+        </main>
+
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+                integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+        crossorigin="anonymous"></script>
+    </body>
+
+</html>
