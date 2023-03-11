@@ -4,6 +4,7 @@ import com.egg.biblioteca.entities.Usuario;
 import com.egg.biblioteca.enumeraciones.Rol;
 import com.egg.biblioteca.exceptions.MiException;
 import com.egg.biblioteca.repositories.UsuarioRepositorio;
+import com.egg.biblioteca.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class UsuarioServiceImpl implements UserDetailsService {
+public class UsuarioServiceImpl implements UserDetailsService, UsuarioService {
 
     @Autowired
     private UsuarioRepositorio usuarioRepositorio;
@@ -45,7 +46,7 @@ public class UsuarioServiceImpl implements UserDetailsService {
         usuarioRepositorio.save(usuario);
     }
 
-    private void validar(String nombre, String email, String password, String password2) throws MiException {
+    public void validar(String nombre, String email, String password, String password2) throws MiException {
 
         if (nombre == null || nombre.isEmpty()) {
             throw new MiException("El nombre no puede estar vacio o nulo");
