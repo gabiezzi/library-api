@@ -3,12 +3,17 @@
  */
 package com.egg.biblioteca.controllers;
 
+import com.egg.biblioteca.entities.Autor;
 import com.egg.biblioteca.exceptions.MiException;
 import com.egg.biblioteca.services.impl.AutorServiceImpl;
+import net.bytebuddy.asm.Advice;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @Controller
@@ -18,59 +23,52 @@ public class AutorController {
     @Autowired
     private AutorServiceImpl autorServiceImpl;
 
-    @GetMapping("/registrar")
-    public String registrar() {
-        return "autor_form.html";
+    @PostMapping()
+    public ResponseEntity<Autor> crear(@RequestBody Autor autor) { //mismo nombre que el que tiene el parametro de form name=""
+
+        if (autor == null)
+            return ResponseEntity.badRequest().build();
+
+        return ResponseEntity.ok(autorServiceImpl.crearAutor(autor));
+
+
     }
 
-    @PostMapping("/registro")
-    public String registro(@RequestParam String nombre, ModelMap model) { //mismo nombre que el que tiene el parametro de form name=""
+    @PutMapping("/{id}")
+    public ResponseEntity<Autor> editar(@PathVariable String id, @RequestBody Autor autor) throws MiException {
 
+        if (autor == null || id == null)
+            return ResponseEntity.badRequest().build();
 
-        try {
-            autorServiceImpl.crearAutor(nombre);
+        return ResponseEntity.ok(autorServiceImpl.modificarAutor(autor, id));
 
-            model.put("exito", "Autor cargado con exito!");
-
-        } catch (MiException ex) {
-
-            model.put("error", ex.getMessage());
-            return "autor_form.html";
-
-        }
-
-        return "index.html";
     }
 
     @GetMapping("/lista")
-    public String listar(ModelMap model) {
+    public ResponseEntity<List<Autor>> listar() {
 
-        model.addAttribute("autores", autorServiceImpl.listarAutores());
-
-        return "autor_list.html";
+        return ResponseEntity.ok(autorServiceImpl.listarAutores());
     }
 
-    @GetMapping("/editar/{id}")
-    public String editar(ModelMap model, @PathVariable String id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<Autor> getOne(@PathVariable(value = "id") String idAutor){
 
-        model.put("autor", autorServiceImpl.getOne(id));
+        if (idAutor == null)
+            return ResponseEntity.badRequest().build();
 
-        return "autor_editar";
+        return ResponseEntity.ok(autorServiceImpl.getOne(idAutor));
 
     }
 
-    @PostMapping("/editar/{id}")
-    public String editar(@PathVariable String id, String nombre, ModelMap model) {
+    @DeleteMapping
+    public ResponseEntity<Autor> borrarLibro(@PathVariable(value = "id") String idAutor){
 
-        try {
-            autorServiceImpl.modificarAutor(nombre, id);
+        if (idAutor == null)
+            return ResponseEntity.badRequest().build();
 
-            return "redirect:../lista";
-        } catch (MiException e) {
-            model.put("error", e.getMessage());
-            return "autor_editar";
-        }
+        autorServiceImpl.borrarAutor(idAutor);
 
+        return ResponseEntity.noContent().build();
 
     }
 

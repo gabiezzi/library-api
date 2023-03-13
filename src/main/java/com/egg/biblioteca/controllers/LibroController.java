@@ -15,10 +15,15 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 /* * @author Gabiezzi
  */
@@ -26,118 +31,71 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("libro/")
 public class LibroController {
 
+    private final LibroServiceImpl libroServiceImpl;
+    private final AutorServiceImpl autorServiceImpl;
+    private final EditorialServiceImpl editorialServiceImpl;
+
     @Autowired
-    private LibroServiceImpl libroServiceImpl;
-    @Autowired
-    private AutorServiceImpl autorServiceImpl;
-    @Autowired
-    private EditorialServiceImpl editorialServiceImpl;
-
-    @GetMapping("/registrar")
-    public String registrar(ModelMap model) {
-
-        List<Autor> autores = autorServiceImpl.listarAutores();
-        List<Editorial> editoriales = editorialServiceImpl.listarEditoriales();
-
-        model.addAttribute("autores", autores);
-
-        model.addAttribute("editoriales", editoriales);
-
-        return "libro_form.html";
+    public LibroController(LibroServiceImpl libroServiceImpl, AutorServiceImpl autorServiceImpl, EditorialServiceImpl editorialServiceImpl) {
+        this.libroServiceImpl = libroServiceImpl;
+        this.autorServiceImpl = autorServiceImpl;
+        this.editorialServiceImpl = editorialServiceImpl;
     }
 
-    @PostMapping("/registro")
-    public String registro(@RequestBody Libro libro, ModelMap model) throws MiException {
+    //Create book
+    @PostMapping("/crear")
+    public ResponseEntity<Libro> registro(Libro libro) throws MiException {
 
-        if (libro == null)
+       if (libro == null)
+           return ResponseEntity.badRequest().build();
 
-            throw new MiException("Falta cuerpo del libro");
-
-
-        try {
-
-            libroServiceImpl.crearLibro(libro);
-
-            model.put("exito", "El libro fue cargado exitosamente!");
-
-        } catch (Exception ex) {
-
-            Logger.getLogger(LibroController.class.getName()).log(Level.SEVERE, null, ex);
-
-            List<Autor> autores = autorServiceImpl.listarAutores();
-            List<Editorial> editoriales = editorialServiceImpl.listarEditoriales();
-
-            model.addAttribute("autores", autores);
-
-            model.addAttribute("editoriales", editoriales);
-
-            model.put("error", ex.getMessage());
-
-            return "libro_form.html";
-
-        }
-
-        return "libro_form.html";
+       return ResponseEntity.ok(libroServiceImpl.crearLibro(libro));
     }
+
+    //Get all books
 
     @GetMapping("/lista")
-    public String listar(ModelMap model) {
 
-        model.addAttribute("libros", libroServiceImpl.listarLibros());
-        return "libro_list";
+    public List<Libro> listar() {
 
-    }
-
-    @GetMapping("/editar/{isbn}")
-    public String editar(ModelMap model, @PathVariable Long isbn) {
-
-        model.put("libro", libroServiceImpl.getOne(isbn));
-
-        List<Autor> autores = autorServiceImpl.listarAutores();
-        List<Editorial> editoriales = editorialServiceImpl.listarEditoriales();
-
-        model.addAttribute("autores", autores);
-
-        model.addAttribute("editoriales", editoriales);
-
-        return "libro_editar";
+        return libroServiceImpl.listarLibros();
 
     }
 
-    @PutMapping("/editar/{isbn}")
-    public String modificar(@PathVariable Long isbn, String titulo, Integer ejemplares, String idAutor, String idEditorial, ModelMap model) {
+    //get one book by Isbn
+    @GetMapping("/{id}")
+    public ResponseEntity<Libro> libroPorId(@PathVariable(value="id") Long isbn) throws MiException {
 
-        try {
-            libroServiceImpl.modificarLibro(isbn, titulo, idAutor, idEditorial, ejemplares);
-            return "redirect:../lista";
-        } catch (MiException e) {
-            model.put("error", e.getMessage());
+        if (isbn == null)
+            return ResponseEntity.badRequest().build();
 
-            List<Autor> autores = autorServiceImpl.listarAutores();
-            List<Editorial> editoriales = editorialServiceImpl.listarEditoriales();
-
-            model.addAttribute("autores", autores);
-
-            model.addAttribute("editoriales", editoriales);
-
-            return "libro_editar";
-        }
+        return ResponseEntity.ok(libroServiceImpl.getOne(isbn));
 
 
     }
 
-    @GetMapping
-    public String libroPorId(@PathVariable Long isbn, ModelMap modelMap) throws MiException {
 
-        if (isbn == 0)
-            throw new MiException("Isbn no puede ser nulo");
+    @PostMapping("/editar/{id}")
+    public ResponseEntity<Libro> editar(Libro libroActualizado, @PathVariable Long isbn) {
 
-        Libro libro = libroServiceImpl.getOne(isbn);
+        if (isbn == null || libroActualizado == null)
+            return ResponseEntity.badRequest().build();
 
-        modelMap.addAttribute("libro", libro);
-
-        return "libro-detalles";
-
+        return ResponseEntity.ok(libroServiceImpl.editarLibro(isbn, libroActualizado));
 
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Libro> borrarLibro(@PathVariable(value = "id") Long isbn){
+
+        if (isbn == null)
+            ResponseEntity.badRequest().build();
+
+        return ResponseEntity.noContent().build();
+
+    }
+
+
+
+
 }

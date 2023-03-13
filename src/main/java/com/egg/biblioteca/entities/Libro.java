@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -30,9 +31,8 @@ public class Libro {
     private Long isbn;
     private String titulo;
     private Integer cantEjemplares;
-    
-    @Temporal(TemporalType.DATE)
-    private Date alta;
+
+    private LocalDateTime alta;
     
     @ManyToOne
     private Autor autor;
