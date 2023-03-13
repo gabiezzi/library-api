@@ -12,6 +12,7 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 import com.egg.biblioteca.services.EditorialService;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,13 +25,16 @@ public class EditorialServiceImpl implements EditorialService {
     private EditorialRepository editorialRepository;
 
     @Transactional
-    public void crearEditorial(String nombre) throws MiException {
+    public void crearEditorial(Editorial editorial) throws MiException {
 
-        validar(nombre);
+        Optional <Editorial> editorialValidacion = editorialRepository.findById(editorial.getId());
 
-        Editorial editorial = new Editorial();
+        Optional <Editorial> editorialDuplicada = editorialRepository.buscarEditorialPorNombre(editorial.getNombre());
 
-        editorial.setNombre(nombre);
+        if (editorialValidacion.isPresent())
+            new ServiceException("Ya hay una editorial con ese id");
+        if (editorialDuplicada.isPresent())
+            new ServiceException("Ya hay una editorial con ese nombre");
 
         editorialRepository.save(editorial);
     }

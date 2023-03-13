@@ -31,8 +31,7 @@ public class Libro {
     private Long isbn;
     private String titulo;
     private Integer cantEjemplares;
-    
-    @Temporal(TemporalType.DATE)
+
     private LocalDateTime alta;
     
     @ManyToOne

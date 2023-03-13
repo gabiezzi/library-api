@@ -5,13 +5,14 @@ package com.egg.biblioteca.services.impl;
 
 import com.egg.biblioteca.entities.Autor;
 import com.egg.biblioteca.repositories.AutorRepository;
-import com.egg.biblioteca.exceptions.MiException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
 
 import com.egg.biblioteca.services.AutorService;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,15 +24,19 @@ public class AutorServiceImpl implements AutorService {
 
    @Override
     @Transactional
-    public void crearAutor(String nombre) throws MiException {
+    public Autor crearAutor(Autor autor)  throws ServiceException {
 
-        validar(nombre);
+        Optional<Autor> autorValidacion = autorRepository.findById(autor.getId());
 
-        Autor autor = new Autor();
+        Optional<Autor> autorDuplicado = autorRepository.buscarAutorPorNombre(autor.getNombre());
 
-        autor.setNombre(nombre);
+       if (autorValidacion.isPresent())
+            new ServiceException("Ya existe libro con ese id");
 
-        autorRepository.save(autor);
+       if (autorDuplicado.isPresent())
+           new ServiceException("Ya existe libro con ese nombre");
+
+       return autorRepository.save(autor);
     }
 
     @Override
@@ -41,51 +46,36 @@ public class AutorServiceImpl implements AutorService {
 
         autores = autorRepository.findAll();
 
+        if (autores.isEmpty())
+            throw new ServiceException("Authors list empty");
+
         return autores;
 
     }
 
     @Override
     @Transactional
-    public void modificarAutor(String nombre, String id) throws MiException {
+    public Autor modificarAutor(Autor autor, String id) throws ServiceException {
 
-        validar(nombre, id);
 
-        Optional<Autor> respuestaAutor = autorRepository.findById(id);
+        Autor respuestaAutor = autorRepository.findById(id).orElseThrow(()->new ServiceException("No hay autor con ese id"));
 
-        if (respuestaAutor.isPresent()) {
+        return autorRepository.save(respuestaAutor);
 
-            Autor autor = respuestaAutor.get();
-
-            autor.setNombre(nombre);
-
-            autorRepository.save(autor);
-
-        }
     }
 
     @Override
-    public Autor getOne(String id){
-        return autorRepository.getOne(id);
+    public Autor getOne(String id) throws ServiceException{
+        return autorRepository.findById(id).orElseThrow(()->new ServiceException("No hay autor con ese id"));
     }
 
     @Override
-    public void validar(String nombre, String id) throws MiException {
-        if (nombre.isEmpty() || nombre == null) {
-            throw new MiException("El nombre del autor  no puede ser nulo o estar vacío.");
-        }
-        if (id.isEmpty() || id == null) {
-            throw new MiException("El id del autor  no puede ser nulo o estar vacío.");
-        }
+    public void borrarAutor(String id) {
+
+       autorRepository.delete(getOne(id));
+
 
     }
 
 
-    @Override
-    public void validar(String nombre) throws MiException {
-        if (nombre.isEmpty() || nombre == null) {
-            throw new MiException("El nombre del autor no puede ser nulo o estar vacío.");
-        }
-
-    }
 }

@@ -15,12 +15,13 @@ import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
 
+import com.egg.biblioteca.services.LibroService;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class LibroServiceImpl {
+public class LibroServiceImpl implements LibroService {
 
     private final LibroRepository libroRepository;
 
@@ -35,8 +36,9 @@ public class LibroServiceImpl {
         this.editorialRepository = editorialRepository;
     }
 
+    @Override
     @Transactional
-    public void crearLibro(Libro libro) throws ServiceException {
+    public Libro crearLibro(Libro libro) throws ServiceException {
 
         validarLibro(libro);
 
@@ -52,10 +54,11 @@ public class LibroServiceImpl {
         libro.setEditorial(editorial);
         libro.setAlta(LocalDateTime.now());
 
-        libroRepository.save(libro);
+        return libroRepository.save(libro);
 
     }
 
+    @Override
     public List<Libro> listarLibros() throws ServiceException {
 
         List<Libro> libros = libroRepository.findAll();
@@ -67,11 +70,12 @@ public class LibroServiceImpl {
 
     }
 
-
+    @Override
     @Transactional
-    public void modificarLibro(Long isbn, Libro libroActualizado) throws ServiceException {
+    public Libro editarLibro(Long isbn, Libro libroActualizado) throws ServiceException {
 
         validarLibro(libroActualizado);
+
         Libro libro = libroRepository.findById(isbn).orElseThrow(() -> new ServiceException("Libro a actualizar no encontrado"));
 
         libro.setTitulo(libroActualizado.getTitulo());
@@ -82,15 +86,24 @@ public class LibroServiceImpl {
 
         libro.setCantEjemplares(libroActualizado.getCantEjemplares());
 
-
-        libroRepository.save(libro);
-
+        return libroRepository.save(libro);
 
     }
 
+    @Override
     public Libro getOne(Long isbn) {
         return libroRepository.findById(isbn).orElseThrow(() -> new ServiceException("Libro no existente"));
     }
+
+
+    @Override
+    @Transactional
+    public void borrarLibro(Long isbn){
+
+        libroRepository.delete(getOne(isbn));
+
+    }
+
 
     private void validarLibro(Libro libro) throws ServiceException {
 
@@ -112,5 +125,7 @@ public class LibroServiceImpl {
             throw new ServiceException("Editorial no puede ser nulo.");
         }
     }
+
+
 
 }

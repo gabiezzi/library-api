@@ -7,15 +7,14 @@ import java.util.List;
 
 public interface AutorService {
 
-    void crearAutor(String nombre) throws MiException;
+    Autor crearAutor(Autor autor) throws MiException;
 
     List<Autor> listarAutores();
 
-    void modificarAutor(String nombre, String id) throws MiException;
+    Autor modificarAutor(Autor autor, String id) throws MiException;
 
     Autor getOne(String id);
 
-    void validar(String nombre, String id) throws MiException;
+    void borrarAutor(String id);
 
-    void validar(String nombre) throws MiException;
 }
