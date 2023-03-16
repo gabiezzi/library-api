@@ -40,4 +40,12 @@ public class Libro {
     @ManyToOne
     private Editorial editorial;
 
+
+    public Libro(String titulo, Integer cantEjemplares, LocalDateTime alta, Autor autor, Editorial editorial) {
+        this.titulo = titulo;
+        this.cantEjemplares = cantEjemplares;
+        this.alta = alta;
+        this.autor = autor;
+        this.editorial = editorial;
+    }
 }

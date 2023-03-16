@@ -30,5 +30,7 @@ public class Editorial {
     private String id;
     private String nombre;
 
-    
+    public Editorial(String nombre) {
+        this.nombre = nombre;
+    }
 }

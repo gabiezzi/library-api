@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 
 import com.egg.biblioteca.services.LibroService;
@@ -45,14 +46,17 @@ public class LibroServiceImpl implements LibroService {
         if (libroRepository.findByTitulo(libro.getTitulo()).isPresent())
             throw new ServiceException("Este libro ya existe en BBDD");
 
-        Autor autor = autorRepository.findById(libro.getAutor().getId()).orElseThrow(() -> new ServiceException("Autor no encontrado"));
-
-        Editorial editorial = editorialRepository.findById(libro.getEditorial().getId()).orElseThrow(() -> new ServiceException("Editorial no encontrada"));
-
-
-        libro.setAutor(autor);
-        libro.setEditorial(editorial);
         libro.setAlta(LocalDateTime.now());
+
+        // retrieve the Autor instance by ID
+        Autor autor = autorRepository.findById(libro.getAutor().getId()).orElseThrow(() ->
+                new EntityNotFoundException("Autor not found with ID: " + libro.getAutor().getId()));
+        libro.setAutor(autor);
+
+        // retrieve the Editorial instance by ID
+        Editorial editorial = editorialRepository.findById(libro.getEditorial().getId()).orElseThrow(() ->
+                new EntityNotFoundException("Editorial not found with ID: " + libro.getEditorial().getId()));
+        libro.setEditorial(editorial);
 
         return libroRepository.save(libro);
 
@@ -98,7 +102,7 @@ public class LibroServiceImpl implements LibroService {
 
     @Override
     @Transactional
-    public void borrarLibro(Long isbn){
+    public void borrarLibro(Long isbn) {
 
         libroRepository.delete(getOne(isbn));
 
@@ -125,7 +129,6 @@ public class LibroServiceImpl implements LibroService {
             throw new ServiceException("Editorial no puede ser nulo.");
         }
     }
-
 
 
 }

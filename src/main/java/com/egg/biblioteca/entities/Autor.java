@@ -27,4 +27,7 @@ public class Autor {
     private String id;
     private String nombre;
 
+    public Autor(String nombre) {
+        this.nombre = nombre;
+    }
 }
