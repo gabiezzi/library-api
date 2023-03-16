@@ -2,20 +2,22 @@ package com.egg.biblioteca.services;
 
 import com.egg.biblioteca.entities.Editorial;
 import com.egg.biblioteca.exceptions.MiException;
+import org.hibernate.service.spi.ServiceException;
 
 import java.util.List;
 
 public interface EditorialService {
 
-    void crearEditorial(String nombre) throws MiException;
+    Editorial crearEditorial(Editorial editorial) throws ServiceException;
 
     List<Editorial> listarEditoriales();
 
-    void modificarEditorial(String nombre, String id) throws MiException;
+    Editorial modificarEditorial(Editorial editorial, String id) throws MiException;
 
     Editorial getOne(String id);
 
-    void validar(String nombre, String id) throws MiException;
+    void borrarEditorial(String id);
 
-    void validar(String nombre) throws MiException;
+
+
 }

@@ -24,8 +24,9 @@ public class EditorialServiceImpl implements EditorialService {
     @Autowired
     private EditorialRepository editorialRepository;
 
+    @Override
     @Transactional
-    public void crearEditorial(Editorial editorial) throws MiException {
+    public Editorial crearEditorial(Editorial editorial) throws ServiceException {
 
         Optional <Editorial> editorialValidacion = editorialRepository.findById(editorial.getId());
 
@@ -36,9 +37,10 @@ public class EditorialServiceImpl implements EditorialService {
         if (editorialDuplicada.isPresent())
             new ServiceException("Ya hay una editorial con ese nombre");
 
-        editorialRepository.save(editorial);
+        return editorialRepository.save(editorial);
     }
 
+    @Override
     public List<Editorial> listarEditoriales() {
 
         List<Editorial> editoriales = new ArrayList();
@@ -48,41 +50,30 @@ public class EditorialServiceImpl implements EditorialService {
         return editoriales;
     }
 
+    @Override
     @Transactional
-    public void modificarEditorial(String nombre, String id) throws MiException {
+    public Editorial modificarEditorial(Editorial editorial, String id) throws ServiceException {
 
-        validar(nombre, id);
+        Editorial respuestaEditorial = editorialRepository.findById(id).orElseThrow(()-> new ServiceException("No hay editorial con ese id"));
 
-        Optional<Editorial> respuestaEditorial = editorialRepository.findById(id);
+        respuestaEditorial.setNombre(editorial.getNombre());
 
-        if (respuestaEditorial.isPresent()) {
-
-            Editorial editorial = respuestaEditorial.get();
-
-            editorial.setNombre(nombre);
-
-            editorialRepository.save(editorial);
-
-        }
-    }
-
-    public Editorial getOne(String id){
-        return editorialRepository.getOne(id);
-    }
-    public void validar(String nombre, String id) throws MiException {
-        if (nombre.isEmpty() || nombre == null) {
-            throw new MiException("El nombre de la editorial no puede ser nulo o estar vacío.");
-        }
-        if (id.isEmpty() || id == null) {
-            throw new MiException("El id de la editorial no puede ser nulo o estar vacío.");
-        }
+        return editorialRepository.save(respuestaEditorial);
 
     }
 
-    public void validar(String nombre) throws MiException {
-        if (nombre.isEmpty() || nombre == null) {
-            throw new MiException("El nombre de la editorial no puede ser nulo o estar vacío.");
-        }
+    @Override
+    public Editorial getOne(String id) throws ServiceException{
+
+        Editorial editorialRecibida = editorialRepository.findById(id).orElseThrow(()-> new ServiceException("No existe editorial con ese id"));
+
+        return editorialRecibida;
 
     }
+
+    @Override
+    @Transactional
+    public void borrarEditorial(String id){ editorialRepository.delete(getOne(id));   }
+
+
 }
